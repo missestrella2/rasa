@@ -1,47 +1,32 @@
 version: "3.1"
 
 stories:
-  - story: saludo y opciones
+  # Aquí solo manejamos la lógica de "opción 1, 2, 3" y el intent "add_ingredient"
+  
+  - story: elige opción 1
     steps:
-    - intent: saludo
-    - action: utter_saludo
-    - intent: elegir_opcion
-    - action: action_elegir_opcion
+      - intent: choose_option
+        entities:
+          - number: "1"
+      - action: utter_ask_ingredient
 
-  - story: agregar un ingrediente
+  - story: elige opción 2
     steps:
-    - intent: agregar_ingrediente
-    - action: utter_pedir_nombre_ingrediente
-    - intent: informar_nombre
-    - action: utter_pedir_cantidad
-    - intent: informar_cantidad
-    - action: utter_pedir_precio
-    - intent: informar_precio
-    - action: action_guardar_ingrediente
-    - action: utter_confirmar_guardado
+      - intent: choose_option
+        entities:
+          - number: "2"
+      - action: utter_option_in_development
+      - action: utter_ask_ingredient
 
-  - story: flujo alternativo rechazo
+  - story: elige opción 3
     steps:
-    - intent: agregar_ingrediente
-    - action: utter_pedir_nombre_ingrediente
-    - intent: informar_nombre
-    - action: utter_pedir_cantidad
-    - intent: informar_cantidad
-    - action: utter_pedir_precio
-    - intent: informar_precio
-    - action: action_guardar_ingrediente
-    - intent: deny
-    - action: utter_opcion_invalida
+      - intent: choose_option
+        entities:
+          - number: "3"
+      - action: utter_option_in_development
+      - action: utter_ask_ingredient
 
-  - story: flujo alternativo confirmación de datos
+  - story: usuario dice "agregar ingrediente"
     steps:
-    - intent: agregar_ingrediente
-    - action: utter_pedir_nombre_ingrediente
-    - intent: informar_nombre
-    - action: utter_pedir_cantidad
-    - intent: informar_cantidad
-    - action: utter_pedir_precio
-    - intent: informar_precio
-    - action: action_guardar_ingrediente
-    - intent: confirmar_datos
-    - action: utter_confirmar_guardado
+      - intent: add_ingredient
+      - action: utter_ask_ingredient

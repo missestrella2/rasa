@@ -1,94 +1,57 @@
 version: "3.1"
 
 nlu:
-  - intent: saludo
+  - intent: greet
     examples: |
-      - Hola
-      - Buenas
-      - Qué tal
-      - Hey
-      - Hola, qué tal
-      - Hola bot
-      - Buenos días
-      - Buenas tardes
+      - hola
+      - hey
+      - buenas
+      - hi
+      - hola bot
 
-  - intent: goodbye
+  - intent: choose_option
     examples: |
-      - Chau
-      - Adios
-      - Me voy
+      - 1
+      - 2
+      - 3
+      - quiero la opcion 1
+      - quiero la opcion 2
+      - quiero la opcion 3
+      - opción 1
+      - opción 2
+      - opción 3
 
-  - intent: elegir_opcion
+  - intent: add_ingredient
     examples: |
-      - Necesito registrar una receta
-      - Crear un catering
-      - Agregar una receta
-      - Planificar un catering
-      - Quiero registrar algo
-      - Necesito hacer algo
+      - quiero agregar un ingrediente
+      - agregar ingrediente
+      - me gustaría cargar un ingrediente
+      - 1
 
-  - intent: agregar_ingrediente
+  - intent: confirm
     examples: |
-      - Agregar un ingrediente
-      - Registrar un nuevo ingrediente
-      - Necesito guardar un ingrediente
-      - Quiero añadir un ingrediente
-      - Registrar ingrediente
-      - Cargar un ingrediente
-
-  # - intent: agregar_ingredientes
-  #   examples: |
-  #     - Quiero añadir un nuevo ingrediente
-  #     - Necesito cargar ingredientes
-  #     - Agregar un ingrediente a la lista
-
-  - intent: bot_challenge
-    examples: |
-      - ¿Eres un bot?
-      - ¿Quién te creó?
-      - ¿Qué puedes hacer?
+      - sí
+      - si
+      - correcto
+      - claro
+      - afirmativo
 
   - intent: deny
     examples: |
-      - No gracias
-      - Eso no es correcto
-      - Prefiero no hacerlo
-      - No quiero
+      - no
+      - no, gracias
+      - no quiero
+      - mejor no
 
-  - intent: confirmar_datos
+  - intent: out_of_scope
     examples: |
-      - Sí
-      - Está bien
-      - Correcto
-      - Confirmo
-      - Es correcto
+      - qué hora es?
+      - puedes cantarme una canción?
+      - me cuentas un chiste?
 
-
-  - intent: informar_nombre
+  - intent: inform_ingredient
     examples: |
-      - Harina
-      - Azúcar
-      - Aceite
-      - Huevos
-      - Leche
-      - Manteca
-
-  - intent: informar_cantidad
-    examples: |
-      - 100 gramos
-      - 1 kilo
-      - 500 mililitros
-      - 2 litros
-      - 3 unidades
-      - 1 taza
-
-  - intent: informar_precio
-    examples: |
-      - 100 pesos
-      - 250
-      - $300
-      - Cuesta 400
-      - 50 pesos
-      - $20
-
-
+      - [fideos](ingrediente) [Marolio](marca) [500](number) [g](unidad) [$800](amount-of-money)
+      - [manteca](ingrediente) [Dia](marca) [200](number) [gramos](unidad) [50 pesos](amount-of-money)
+      - [leche](ingrediente) [La Serenísima](marca) [1](number) [litro](unidad) [$300](amount-of-money)
+      - [arroz](ingrediente) [Gallo](marca) [1](number) [kg](unidad) [600](amount-of-money)

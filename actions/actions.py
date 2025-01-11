@@ -1,83 +1,54 @@
-# This files contains your custom actions which can be used to run
-# custom Python code.
-#
-# See this guide on how to implement these action:
-# https://rasa.com/docs/rasa/custom-actions
+# actions/actions.py
+import requests
+from typing import Any, Text, Dict, List
+from rasa_sdk import Action, Tracker
+from rasa_sdk.executor import CollectingDispatcher
 
+class ActionSaveIngredient(Action):
+    def name(self) -> Text:
+        return "action_save_ingredient"
 
-# This is a simple example for a custom action which utters "Hello World!"
+    def run(self, 
+            dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-# from typing import Any, Text, Dict, List
-#
-# from rasa_sdk import Action, Tracker
-# from rasa_sdk.executor import CollectingDispatcher
-#
-#
-# class ActionHelloWorld(Action):
-#
-#     def name(self) -> Text:
-#         return "action_hello_world"
-#
-#     def run(self, dispatcher: CollectingDispatcher,
-#             tracker: Tracker,
-#             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-#
-#         dispatcher.utter_message(text="Hello World!")
-#
-#         return []
+        # Extraer entidades
+        ingrediente = tracker.get_slot("ingrediente") or ""
+        marca = tracker.get_slot("marca") or ""
+        cantidad = tracker.get_slot("number") or ""
+        unidad = tracker.get_slot("unidad") or ""
+        precio = tracker.get_slot("amount-of-money") or ""
 
-from rasa_sdk import Action
-from rasa_sdk.events import SlotSet
-
-class ActionElegirOpcion(Action):
-    def name(self):
-        return "action_elegir_opcion"
-
-    def run(self, dispatcher, tracker, domain):
-        user_message = tracker.latest_message.get('text').lower()
-
-        if "ingrediente" in user_message:
-            dispatcher.utter_message(text="Entendido. Vamos a agregar un ingrediente. ¿Cómo se llama?")
-            return [SlotSet("opcion", "ingrediente")]
-        elif "receta" in user_message:
-            dispatcher.utter_message(text="Perfecto. Vamos a registrar una receta. ¿Cuál es el nombre de la receta?")
-            return [SlotSet("opcion", "receta")]
-        elif "catering" in user_message:
-            dispatcher.utter_message(text="Muy bien. Empecemos a crear un catering. ¿Cómo se llamará?")
-            return [SlotSet("opcion", "catering")]
-        else:
-            dispatcher.utter_message(text="Lo siento, no entendí. Por favor elige entre las opciones disponibles.")
+        # Validar que los datos no estén vacíos
+        if not ingrediente or not cantidad or not precio:
+            dispatcher.utter_message(text="Faltan algunos datos del ingrediente. Por favor, ingresalos correctamente.")
             return []
 
+        # Crear el payload para enviar a Django
+        payload = {
+            "nombre": ingrediente,
+            "marca": marca,
+            "cantidad": cantidad,
+            "unidad": unidad,
+            "precio": precio
+        }
 
-from rasa_sdk import Action
-from rasa_sdk.events import SlotSet
-import requests
+        # Ajusta la URL según tu API en PythonAnywhere
+        django_url = "https://cynthiavillagra.pythonanywhere.com/api/chatbot/"
 
-class ActionGuardarIngrediente(Action):
-    def name(self):
-        return "action_guardar_ingrediente"
+        # Realizar la solicitud POST
+        try:
+            response = requests.post(django_url, json=payload)
 
-    def run(self, dispatcher, tracker, domain):
-        nombre = tracker.get_slot("nombre_ingrediente")
-        cantidad = tracker.get_slot("cantidad")
-        precio = tracker.get_slot("precio")
+            if response.status_code == 201:
+                dispatcher.utter_message(text="Ingrediente guardado exitosamente en Django (PythonAnywhere).")
+            else:
+                dispatcher.utter_message(
+                    text=f"Ocurrió un error al guardar el ingrediente. Respuesta [{response.status_code}]: {response.text}"
+                )
 
-        # Enviar datos al backend de Django
-        response = requests.post(
-            "http://127.0.0.1:8000/api/ingredientes/",
-            json={"nombre": nombre, "cantidad": cantidad, "precio": precio}
-        )
-
-        if response.status_code == 201:
-            dispatcher.utter_message(
-                text=f"Ingrediente guardado con éxito: {nombre}, {cantidad}, ${precio}."
-            )
-        else:
-            dispatcher.utter_message(
-                text="Hubo un problema al guardar el ingrediente. Inténtalo de nuevo."
-            )
+        except Exception as e:
+            dispatcher.utter_message(text=f"Error de conexión al guardar ingrediente: {str(e)}")
 
         return []
-
-
