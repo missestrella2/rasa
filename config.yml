@@ -1,31 +1,26 @@
 version: "3.1"
 
 # The config recipe.
-# https://rasa.com/docs/rasa/model-configuration/
 recipe: default.v1
 
-# The assistant project unique identifier
-# (Reemplaza con un ID único para tu proyecto)
+# Identificador único de tu proyecto
 assistant_id: 20241220-120951-chestnut-class
 
-# Language de Rasa NLU
-language: en
+# Ajustamos el idioma a español
+language: "es"
 
 # Configuración del pipeline de NLU
-# https://rasa.com/docs/rasa/nlu/components/
 pipeline:
   - name: WhitespaceTokenizer
   - name: RegexFeaturizer
   - name: LexicalSyntacticFeaturizer
   - name: CountVectorsFeaturizer
   
-  # Segundo CountVectorsFeaturizer para análisis a nivel de caracteres (char_wb)
+  # Segundo CountVectorsFeaturizer para análisis a nivel de caracteres
   - name: CountVectorsFeaturizer
     analyzer: char_wb
     min_ngram: 1
     max_ngram: 4
-
-  #- name: CRFEntityExtractor
 
   - name: DIETClassifier
     epochs: 100
@@ -41,14 +36,14 @@ pipeline:
     threshold: 0.3
     ambiguity_threshold: 0.1
 
+  # Duckling configurado en español
   - name: DucklingEntityExtractor
     url: "http://localhost:8001"
     dimensions: ["time", "number", "amount-of-money", "distance"]
     locale: "es"
     timezone: "America/Buenos_Aires"
 
-# Configuración de Rasa Core (políticas)
-# https://rasa.com/docs/rasa/core/policies/
+# Configuración de las políticas de diálogo
 policies:
   - name: RulePolicy
   - name: MemoizationPolicy

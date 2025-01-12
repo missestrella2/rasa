@@ -30,3 +30,11 @@ stories:
     steps:
       - intent: add_ingredient
       - action: utter_ask_ingredient
+
+  - story: usuario informa un ingrediente
+    steps:
+      - intent: inform_ingredient
+      - action: utter_confirmation  # Muestra algo como “¿Quieres guardar ‘x’?”
+      - intent: affirm
+      - action: action_save_ingredient
+      - action: utter_thanks

@@ -19,3 +19,4 @@ rules:
       - intent: confirm
       - action: action_save_ingredient
       - action: utter_thanks
+      - action: utter_greet

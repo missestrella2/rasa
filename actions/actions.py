@@ -1,54 +1,44 @@
-# actions/actions.py
 import requests
-from typing import Any, Text, Dict, List
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
+from typing import Any, Text, Dict, List
 
 class ActionSaveIngredient(Action):
     def name(self) -> Text:
         return "action_save_ingredient"
 
-    def run(self, 
-            dispatcher: CollectingDispatcher,
+    def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-        # Extraer entidades
-        ingrediente = tracker.get_slot("ingrediente") or ""
-        marca = tracker.get_slot("marca") or ""
-        cantidad = tracker.get_slot("number") or ""
-        unidad = tracker.get_slot("unidad") or ""
-        precio = tracker.get_slot("amount-of-money") or ""
+        ingrediente = tracker.get_slot("ingrediente")
+        marca = tracker.get_slot("marca")
+        number = tracker.get_slot("number")
+        unidad = tracker.get_slot("unidad")
+        amount = tracker.get_slot("amount-of-money")
 
-        # Validar que los datos no estén vacíos
-        if not ingrediente or not cantidad or not precio:
-            dispatcher.utter_message(text="Faltan algunos datos del ingrediente. Por favor, ingresalos correctamente.")
-            return []
+        # Ajusta según tu lógica de parseo o validación
+        # para evitar resultados extraños como 500000000000.07
 
-        # Crear el payload para enviar a Django
         payload = {
-            "nombre": ingrediente,
+            "ingrediente": ingrediente,
             "marca": marca,
-            "cantidad": cantidad,
+            "cantidad": number,
             "unidad": unidad,
-            "precio": precio
+            "precio": amount
         }
 
-        # Ajusta la URL según tu API en PythonAnywhere
-        django_url = "https://cynthiavillagra.pythonanywhere.com/api/chatbot/"
-
-        # Realizar la solicitud POST
         try:
-            response = requests.post(django_url, json=payload)
+            # EJEMPLO: Llamada a Django
+            response = requests.post("http://localhost:8000/api/chatbot/ingrediente", json=payload)
+            response.raise_for_status()
 
-            if response.status_code == 201:
-                dispatcher.utter_message(text="Ingrediente guardado exitosamente en Django (PythonAnywhere).")
-            else:
-                dispatcher.utter_message(
-                    text=f"Ocurrió un error al guardar el ingrediente. Respuesta [{response.status_code}]: {response.text}"
-                )
-
-        except Exception as e:
-            dispatcher.utter_message(text=f"Error de conexión al guardar ingrediente: {str(e)}")
+            # Respuesta exitosa
+            dispatcher.utter_message(text="El ingrediente se guardó correctamente.")
+        except requests.exceptions.RequestException as e:
+            # Captura error
+            dispatcher.utter_message(
+                text=f"Ocurrió un error al guardar el ingrediente. {str(e)}"
+            )
 
         return []
